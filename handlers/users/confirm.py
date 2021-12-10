@@ -19,7 +19,7 @@ async def confirm_post(call: CallbackQuery, state: FSMContext):
     address = data.get('address')
     image = data.get('image')
 
-    msg = f"📄 <b>Quyidagi ma'lumotlar qabul qilindi:</b>\n\n"
+    msg = f"❗️❗️❗️ <b>Mahsulot sotiladi</b>\n\n"
     msg += f"Nomi: {title}\n"
     msg += f"Batafsil: {desc}\n"
     msg += f"Narxi: {price}\n"
@@ -33,29 +33,14 @@ async def confirm_post(call: CallbackQuery, state: FSMContext):
 
 
 @dp.callback_query_handler(text='cancel', state=NewPost.confirm)
-async def cancel_post(call: CallbackQuery):
+async def cancel_post(call: CallbackQuery, state: FSMContext):
     await call.message.delete()
     await call.message.answer("Bekor qilindi", reply_markup=menu)
     await state.finish()
 
 
 @dp.callback_query_handler(text='admin_confirm')
-async def confirm_post(call: CallbackQuery, state: FSMContext):
-    # Ma'lumotlarni qayta o'qiymiz
-    data = await state.get_data()
-    title = data.get('title')
-    desc = data.get('desc')
-    price = data.get('price')
-    phone = data.get('phone')
-    address = data.get('address')
-    image = data.get('image')
-
-    msg = f"📄 <b>Quyidagi ma'lumotlar qabul qilindi:</b>\n\n"
-    msg += f"Nomi: {title}\n"
-    msg += f"Batafsil: {desc}\n"
-    msg += f"Narxi: {price}\n"
-    msg += f"Tel raqam: {phone}\n"
-    msg += f"Manzil: {address}\n"
+async def confirm_post(call: CallbackQuery):
     message = await call.message.edit_reply_markup()
     await message.send_copy(chat_id=CHANNELS[0])
 
