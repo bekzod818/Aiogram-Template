@@ -1,13 +1,13 @@
 from aiogram import types
 from aiogram.dispatcher.filters.builtin import CommandHelp
-from filters import IsPrivate
+from filters import IsGroup
 from loader import dp
 
 
-@dp.message_handler(IsPrivate(), CommandHelp())
+@dp.message_handler(IsGroup(), CommandHelp())
 async def bot_help(message: types.Message):
-    text = ("Buyruqlar: ",
+    text = ("Guruhdagi Buyruqlar: ",
             "/start - Botni ishga tushirish",
-            "/help - Yordam")
+            "/help - Yordam so'rash")
 
     await message.answer("\n".join(text))
