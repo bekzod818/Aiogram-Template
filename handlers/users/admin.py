@@ -9,12 +9,15 @@ async def get_all_users(message: types.Message):
     users = db.select_all_users()
     id = []
     name = []
+    email = []
     for user in users:
         id.append(user[0])
         name.append(user[1])
+        email.append(user[2])
     data = {
         "Telegram ID": id,
-        "Name": name
+        "Name": name,
+        "Email": email,
     }
     df = pd.DataFrame(data)
     # print(df)
