@@ -61,8 +61,8 @@ async def show_item(callback: CallbackQuery, category, subcategory, item_id):
     if item["photo"]:
         text = f"<a href=\"{item['photo']}\">{item['coursename']}</a>\n\n"
     else:
-        text = f"{item['coursename']}\n\n"
-    text += f"Narxi: {item['price']}$\n{item['description']}"
+        text = f"<b>{item['coursename']}</b>\n\n"
+    text += f"<b>Narxi: {item['price']} so'm/oy</b>\n\n{item['description']}"
 
     await callback.message.edit_text(text=text, reply_markup=markup)
 
