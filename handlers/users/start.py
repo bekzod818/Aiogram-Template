@@ -22,3 +22,4 @@ async def bot_start(message: types.Message):
 
     except sqlite3.IntegrityError as err:
         await bot.send_message(chat_id=ADMINS[0], text=f"{name} bazaga oldin qo'shilgan")
+        await message.answer(f"Xush kelibsiz! {name}")
