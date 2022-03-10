@@ -16,9 +16,14 @@ async def get_all_users(message: types.Message):
         "Telegram ID": id,
         "Name": name
     }
+    pd.options.display.max_rows = 10000
     df = pd.DataFrame(data)
-    # print(df)
-    await message.answer(df)
+    if len(df) > 50:
+        for x in range(0, len(df), 50):
+            await bot.send_message(message.chat.id, df[x:x + 50])
+    else:
+       await bot.send_message(message.chat.id, df)
+       
 
 @dp.message_handler(text="/reklama", user_id=ADMINS)
 async def send_ad_to_all(message: types.Message):
