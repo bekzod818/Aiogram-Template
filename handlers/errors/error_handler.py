@@ -1,58 +1,128 @@
 import logging
-from aiogram.utils.exceptions import (Unauthorized, InvalidQueryID, TelegramAPIError,
-                                      CantDemoteChatCreator, MessageNotModified, MessageToDeleteNotFound,
-                                      MessageTextIsEmpty, RetryAfter,
-                                      CantParseEntities, MessageCantBeDeleted)
+from typing import Any
+
+from aiogram import Router
+from aiogram.exceptions import (TelegramAPIError,
+                                TelegramUnauthorizedError,
+                                TelegramBadRequest,
+                                TelegramNetworkError,
+                                TelegramNotFound,
+                                TelegramConflictError,
+                                TelegramForbiddenError,
+                                RestartingTelegram,
+                                CallbackAnswerException,
+                                TelegramEntityTooLarge,
+                                TelegramRetryAfter,
+                                TelegramMigrateToChat,
+                                TelegramServerError)
+from aiogram.handlers import ErrorHandler
 
 
-from loader import dp
+router = Router()
 
 
-@dp.errors_handler()
-async def errors_handler(update, exception):
-    """
-    Exceptions handler. Catches all exceptions within task factory tasks.
-    :param dispatcher:
-    :param update:
-    :param exception:
-    :return: stdout logging
-    """
+@router.errors()
+class MyErrorHandler(ErrorHandler):
+    async def handle(self, ) -> Any:
+        """
+        Handler ошибок. Перехватывает почти все исключения, возникающих при работе бота.
+        :param: None
+        :return: stdout logging
+        """
+        if isinstance(self.exception_name, TelegramUnauthorizedError):
+            """
+            Возникает исключение, когда токен бота недействителен.
+            """
+            logging.info(f'Unauthorized: {self.exception_message}')
+            return True
+        
+        if isinstance(self.exception_name, TelegramNetworkError):
+            """
+            Базовое исключение для всех сетевых ошибок Telegram.
+            """
+            logging.exception(f'NetworkError: {self.exception_message} \nUpdate: {self.update}')
+            return True
+        
+        if isinstance(self.exception_name, TelegramNotFound):
+            """
+            Исключение возникает, когда чат, сообщение, пользователь и т. д. не найдены.
+            """
+            logging.exception(f'NotFound: {self.exception_message} \nUpdate: {self.update}')
+            return True
+        
+        if isinstance(self.exception_name, TelegramConflictError):
+            """
+            Возникает исключение, когда токен бота уже используется другим приложением в режиме опроса.
+            """
+            logging.exception(f'ConflictError: {self.exception_message} \nUpdate: {self.update}')
+            return True
+        
+        if isinstance(self.exception_name, TelegramForbiddenError):
+            """
+            Возникает исключение, когда бота выгоняют из чата и т. д.
+            """
+            logging.exception(f'ForbiddenError: {self.exception_message} \nUpdate: {self.update}')
+            return True
+        
+        if isinstance(self.exception_name, CallbackAnswerException):
+            """
+            Исключение для обратного ответа.
+            """
+            logging.exception(f'CallbackAnswerException: {self.exception_message} \nUpdate: {self.update}')
+            return True
+        
+        if isinstance(self.exception_name, TelegramMigrateToChat):
+            """
+            Возникает исключение, когда чат был перенесен в супергруппу.
+            """
+            logging.exception(f'BadRequest: {self.exception_message} \nUpdate: {self.update}')
+            return True
+        
+        if isinstance(self.exception_name, TelegramServerError):
+            """
+            Возникает исключение, когда сервер Telegram возвращает ошибку 5xx.
+            """
+            logging.exception(f'BadRequest: {self.exception_message} \nUpdate: {self.update}')
+            return True
+        
+        if isinstance(self.exception_name, TelegramAPIError):
+            """
+            Базовое исключение для всех ошибок Telegram API.
+            """
+            logging.exception(f'EntityTooLarge: {self.exception_message} \nUpdate: {self.update}')
+            return True
+        
+        if isinstance(self.exception_name, TelegramRetryAfter):
+            """
+            Исключение возникает при превышении контроля за флудом.
+            """
+            logging.exception(f'BadRequest: {self.exception_message} \nUpdate: {self.update}')
+            return True
+        
+        if isinstance(self.exception_name, TelegramEntityTooLarge):
+            """
+            Возникает исключение, когда вы пытаетесь отправить слишком большой файл.
+            """
+            logging.exception(f'EntityTooLarge: {self.exception_message} \nUpdate: {self.update}')
+            return True
+        
+        if isinstance(self.exception_name, TelegramBadRequest):
+            """
+            Возникает исключение, когда запрос имеет неверный формат.
+            """
+            logging.exception(f'BadRequest: {self.exception_message} \nUpdate: {self.update}')
+            return True
+        
+        if isinstance(self.exception_name, RestartingTelegram):
+            """
+            Возникает исключение при перезапуске сервера Telegram.
 
-    if isinstance(exception, CantDemoteChatCreator):
-        logging.exception("Can't demote chat creator")
-        return True
-
-    if isinstance(exception, MessageNotModified):
-        logging.exception('Message is not modified')
-        return True
-    if isinstance(exception, MessageCantBeDeleted):
-        logging.exception('Message cant be deleted')
-        return True
-
-    if isinstance(exception, MessageToDeleteNotFound):
-        logging.exception('Message to delete not found')
-        return True
-
-    if isinstance(exception, MessageTextIsEmpty):
-        logging.exception('MessageTextIsEmpty')
-        return True
-
-    if isinstance(exception, Unauthorized):
-        logging.exception(f'Unauthorized: {exception}')
-        return True
-
-    if isinstance(exception, InvalidQueryID):
-        logging.exception(f'InvalidQueryID: {exception} \nUpdate: {update}')
-        return True
-
-    if isinstance(exception, TelegramAPIError):
-        logging.exception(f'TelegramAPIError: {exception} \nUpdate: {update}')
-        return True
-    if isinstance(exception, RetryAfter):
-        logging.exception(f'RetryAfter: {exception} \nUpdate: {update}')
-        return True
-    if isinstance(exception, CantParseEntities):
-        logging.exception(f'CantParseEntities: {exception} \nUpdate: {update}')
-        return True
-    
-    logging.exception(f'Update: {update} \n{exception}')
+            Похоже, что эта ошибка больше не используется Telegram, но она все еще здесь для обратной совместимости.
+            
+            В настоящее время вы должны ожидать, что Telegram может вызывать RetryAfter (с тайм-аутом 5 секунд)
+            ошибка вместо этой.
+            """
+            logging.exception(f'RestartingTelegram: {self.exception_message} \nUpdate: {self.update}')
+            return True
+        
+        logging.exception(f'Update: {self.update} \n{self.exception_name}')

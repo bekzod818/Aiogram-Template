@@ -1,9 +1,15 @@
-from aiogram import types
+from typing import Any
 
-from loader import dp
+from aiogram import Router
+from aiogram.handlers import MessageHandler
+from aiogram.methods import SendMessage
+
+router = Router()
 
 
-# Echo bot
-@dp.message_handler(state=None)
-async def bot_echo(message: types.Message):
-    await message.answer(message.text)
+@router.message()
+class MyHandler(MessageHandler):
+    
+    # Название функции всегда handle, потому что это перезапись метода
+    async def handle(self) -> Any:
+        return SendMessage(chat_id=self.chat.id, text=self.event.text)
