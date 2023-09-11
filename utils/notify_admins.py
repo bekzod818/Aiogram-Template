@@ -1,14 +1,17 @@
 import logging
 
-from aiogram import Dispatcher
+from aiogram import Bot
 
-from data.config import ADMINS
+from data.config import admins
 
 
-async def on_startup_notify(dp: Dispatcher):
-    for admin in ADMINS:
+async def on_startup_notify(bot: Bot):
+    for admin in admins:
         try:
-            await dp.bot.send_message(admin, "Bot ishga tushdi")
-
+            bot_properties = await bot.me()
+            message = ["Бот начал работу.",
+                       f"<b>Bot id:</> {bot_properties.id}",
+                       f"<b>Bot username:</> {bot_properties.username}"]
+            await bot.send_message(admin, "\n".join(message))
         except Exception as err:
             logging.exception(err)
