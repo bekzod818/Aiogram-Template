@@ -23,6 +23,8 @@ async def bot_start(message: types.Message):
 
     full_name = message.from_user.full_name
     user = await db.select_user(telegram_id=message.from_user.id)
+    username = message.from_user.username
+    name = message.from_user.full_name
     if user is None:
         user = await db.add_user(
             telegram_id=message.from_user.id,
@@ -33,6 +35,9 @@ async def bot_start(message: types.Message):
         count = await db.count_users()
         msg = f"[{make_title(user['full_name'])}](tg://user?id={user['telegram_id']}) bazaga qo'shildi\.\nBazada {count} ta foydalanuvchi bor\."
         await bot.send_message(chat_id=ADMINS[0], text=msg, parse_mode=types.ParseMode.MARKDOWN_V2)
+    if username is None:
+        await bot.send_message(chat_id=ADMINS[0], text=f"{name} has already been added to the database")
+        await message.answer(f"Xush kelibsiz\! {make_title(full_name)}", parse_mode=types.ParseMode.MARKDOWN_V2)
     else:
         await bot.send_message(chat_id=ADMINS[0], text=f"[{make_title(full_name)}](tg://user?id={message.from_user.id}) bazaga oldin qo'shilgan", disable_web_page_preview=True, parse_mode=types.ParseMode.MARKDOWN_V2)
     await message.answer(f"Xush kelibsiz\! {make_title(full_name)}", parse_mode=types.ParseMode.MARKDOWN_V2)
